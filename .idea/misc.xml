@@ -3,12 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/drawable/side_nav_bar.xml" value="0.3505" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/app_bar_main.xml" value="0.358695652173913" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/content_main.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_audio.xml" value="0.17135416666666667" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_blank.xml" value="0.18541666666666667" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_calculator.xml" value="0.358695652173913" />
+        <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_camera.xml" value="0.1" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_music.xml" value="0.25" />
+        <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_sensor.xml" value="0.3625" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_slideshow.xml" value="0.358695652173913" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/fragment_web_view.xml" value="0.358695652173913" />
         <entry key="..\:/Users/Nefos/AndroidStudioProjects/MireaProject/app/src/main/res/layout/nav_header_main.xml" value="0.358695652173913" />

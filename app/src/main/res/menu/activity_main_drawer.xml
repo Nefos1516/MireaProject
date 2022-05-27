@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
@@ -27,6 +28,18 @@
         <item
             android:id="@+id/nav_player"
             android:icon="@drawable/ic_baseline_library_music_24"
-            android:title="@string/nav_player" />
+            android:title="@string/menu_player" />
+        <item
+            android:id="@+id/nav_sensor"
+            android:icon="@drawable/ic_baseline_android_24"
+            android:title="@string/menu_sensor" />
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_camera" />
+        <item
+            android:id="@+id/nav_audio"
+            android:icon="@drawable/ic_baseline_mic_24"
+            android:title="@string/menu_audio" />
     </group>
 </menu>

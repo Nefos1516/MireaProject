@@ -35,6 +35,21 @@
     <fragment
         android:id="@+id/nav_player"
         android:name="ru.mirea.netelev.mireaproject.MusicFragment"
-        android:label="fragment_music"
+        android:label="@string/menu_player"
         tools:layout="@layout/fragment_music" />
+    <fragment
+        android:id="@+id/nav_sensor"
+        android:name="ru.mirea.netelev.mireaproject.SensorFragment"
+        android:label="@string/menu_sensor"
+        tools:layout="@layout/fragment_sensor" />
+    <fragment
+        android:id="@+id/nav_camera"
+        android:name="ru.mirea.netelev.mireaproject.CameraFragment"
+        android:label="@string/menu_camera"
+        tools:layout="@layout/fragment_camera" />
+    <fragment
+        android:id="@+id/nav_audio"
+        android:name="ru.mirea.netelev.mireaproject.AudioFragment"
+        android:label="@string/menu_audio"
+        tools:layout="@layout/fragment_audio" />
 </navigation>
