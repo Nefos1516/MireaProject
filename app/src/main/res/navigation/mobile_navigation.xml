@@ -58,8 +58,9 @@
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
-        android:id="@+id/nav_story"
-        android:name="ru.mirea.netelev.mireaproject.story.StoryFragment"
-        android:label="@string/menu_story"
-        tools:layout="@layout/fragment_story" />
+        android:id="@+id/nav_info"
+        android:name="ru.mirea.netelev.mireaproject.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" />
+
 </navigation>

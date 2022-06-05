@@ -1,6 +1,7 @@
 package ru.mirea.netelev.mireaproject;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -16,147 +17,124 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import ru.mirea.netelev.mireaproject.databinding.FragmentAudioBinding;
 
 public class AudioFragment extends Fragment {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private MusicService musicService;
-    private ImageButton playButton;
-    private Button startButton;
-    private Button stopButton;
+    private static final int REQUEST_CODE_PERMISSION = 100;
+    private Button startRecordButton;
+    private Button stopRecordButton;
+    private MediaRecorder mediaRecorder;
     private final String[] PERMISSIONS = {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.RECORD_AUDIO
     };
     private boolean isWork;
-    private MediaRecorder mediaRecorder;
     private File audioFile;
-    ActivityResultLauncher<String[]> permissionsRequest;
-
-    public AudioFragment() {
-        // Required empty public constructor
-    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_audio,
-                container, false);
-
-        playButton = view.findViewById(R.id.playButton);
-        playButton.setOnClickListener(this::onPlayButtonClick);
-        startButton = view.findViewById(R.id.startButton);
-        startButton.setOnClickListener(this::onRecordStartClick);
-        stopButton = view.findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(this::onRecordStopClick);
-        stopButton.setEnabled(false);
+        ru.mirea.netelev.mireaproject.databinding.FragmentAudioBinding binding = FragmentAudioBinding.inflate(inflater, container, false);
+        View root = binding.getRoot();
         mediaRecorder = new MediaRecorder();
-        permissionsRequest = registerForActivityResult(
-                new ActivityResultContracts.RequestMultiplePermissions(), isGranted -> {
-                    if (isGranted.containsValue(false)){
-                        permissionsRequest.launch(PERMISSIONS);
-                    } else {
-                        isWork = true;
-                    }
-                });
-        isWork = hasPermissions(getContext(), PERMISSIONS);
+        startRecordButton = binding.startButton;
+        stopRecordButton = binding.stopButton;
+        binding.startButton.setOnClickListener(this::onRecordStart);
+        binding.stopButton.setOnClickListener(this::onStopRecord);
+        binding.playButton.setOnClickListener(this::onListenRecord);
+
+        isWork = hasPermissions(getActivity(), PERMISSIONS);
         if (!isWork) {
-            permissionsRequest.launch(PERMISSIONS);
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS,
+                    REQUEST_CODE_PERMISSION);
         }
-        return view;
+
+        return root;
     }
 
-    private void onPlayButtonClick(View view){
-        if (musicService == null && audioFile != null){
-            musicService = new MusicService(getContext(),
-                    audioFile.getAbsolutePath());
-            musicService.start();
-            playButton.setImageResource(android.R.drawable.ic_media_pause);
-        } else {
-            if (musicService != null) {
-                stopMusicPlaying();
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
-            musicService = null;
         }
+        return true;
     }
-
-    private void stopMusicPlaying(){
-        musicService.interrupt();
-        playButton.setImageResource(android.R.drawable.ic_media_play);
-    }
-
     @Override
-    public void onStop() {
-        super.onStop();
-        if (musicService != null){
-            musicService.interrupt();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            isWork = grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED;
         }
     }
 
-    private void onRecordStartClick(View view){
-        if (musicService != null && musicService.isAlive()){
-            stopMusicPlaying();
-        }
-        playButton.setEnabled(false);
-        startButton.setEnabled(false);
-        stopButton.setEnabled(true);
-        stopButton.requestFocus();
+    public void onRecordStart(View view) {
         try {
+            startRecordButton.setEnabled(false);
+            stopRecordButton.setEnabled(true);
+            stopRecordButton.requestFocus();
             startRecording();
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, "Caught io exception " + e.getMessage());
         }
     }
-
+    public void onStopRecord(View view) {
+        startRecordButton.setEnabled(true);
+        stopRecordButton.setEnabled(false);
+        startRecordButton.requestFocus();
+        stopRecording();
+        processAudioFile();
+    }
     private void startRecording() throws IOException {
-        if (isWork){
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            Log.d(TAG, "sd-card success");
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            if (audioFile == null && getActivity() != null){
-                audioFile = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC),
-                        "mirea.3gp");
+            if (audioFile == null) {
+                audioFile = createRecordFile();
             }
             mediaRecorder.setOutputFile(audioFile.getAbsolutePath());
             mediaRecorder.prepare();
             mediaRecorder.start();
-            Log.e(TAG, "Start");
-            Toast.makeText(getContext(), "Запись началась.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Recording started.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void onRecordStopClick(View view){
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
-        startButton.requestFocus();
-        stopRecording();
-        processAudioFile();
-        playButton.setEnabled(true);
+    private File createRecordFile() throws IOException {
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String recordFileName = "RECORD_" + timeStamp + ".3gp";
+        return new File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_MUSIC), recordFileName);
     }
 
-    private void stopRecording(){
-        if(mediaRecorder != null){
+    private void stopRecording() {
+        if (mediaRecorder != null) {
             Log.d(TAG, "stopRecording");
             mediaRecorder.stop();
             mediaRecorder.reset();
             mediaRecorder.release();
-            mediaRecorder = null;
-            Toast.makeText(getContext(), "Запись остановлена.",
+            Toast.makeText(getActivity(), "U not recording",
                     Toast.LENGTH_SHORT).show();
         }
     }
-
     private void processAudioFile() {
         Log.d(TAG, "processAudioFile");
         ContentValues values = new ContentValues(4);
@@ -172,16 +150,11 @@ public class AudioFragment extends Fragment {
         requireActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, newUri));
     }
 
-    public static boolean hasPermissions(Context context, String... permissions){
-        if (context != null && permissions != null){
-            for (String permission: permissions){
-                if (ActivityCompat.checkSelfPermission(context, permission)
-                        == PackageManager.PERMISSION_DENIED){
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+    private void onListenRecord(View view) {
+        MainActivity activity = (MainActivity) getActivity();
+        assert activity != null;
+        activity.startService(
+                new Intent(activity, RecordService.class)
+                        .putExtra("audioFilePath", audioFile.getAbsolutePath()));
     }
 }

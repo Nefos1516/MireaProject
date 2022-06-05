@@ -1,48 +1,28 @@
 package ru.mirea.netelev.mireaproject;
 
-import android.content.Context;
+import android.app.Service;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 
-import java.io.IOException;
-
-public class MusicService extends Thread {
+public class MusicService extends Service {
     private MediaPlayer mediaPlayer;
-    private final Context context;
-    private int musicID;
-    private String filePath;
 
-    public MusicService(Context context, int musicID) {
-        this.context = context;
-        this.musicID = musicID;
-    }
-    public MusicService(Context context, String filePath) {
-        this.context = context;
-        this.filePath = filePath;
+    @Override
+    public IBinder onBind(Intent intent) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
-    public void run()
-    {
-        MediaPlayer mediaPlayer = null;
-        if (filePath != null){
-            try {
-                mediaPlayer = new MediaPlayer();
-                mediaPlayer.setDataSource(filePath);
-                mediaPlayer.setOnPreparedListener(MediaPlayer::start);
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            mediaPlayer = MediaPlayer.create(context, musicID);
-            mediaPlayer.start();
-        }
+    public void onCreate(){
+        mediaPlayer = MediaPlayer.create(this, R.raw.lagtrain);
         mediaPlayer.setLooping(true);
-        while (true){
-            if (isInterrupted()) break;
-        }
-        mediaPlayer.stop();
-        mediaPlayer.reset();
-        mediaPlayer.release();
     }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        mediaPlayer.start();
+        return START_STICKY;
+    }
+    @Override
+    public void onDestroy() { mediaPlayer.stop(); }
 }
