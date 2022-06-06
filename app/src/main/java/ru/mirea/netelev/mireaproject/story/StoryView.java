@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import ru.mirea.netelev.mireaproject.App;
 import ru.mirea.netelev.mireaproject.MainActivity;
 import ru.mirea.netelev.mireaproject.R;
 

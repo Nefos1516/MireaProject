@@ -58,9 +58,18 @@
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
     <fragment
+        android:id="@+id/nav_story"
+        android:name="ru.mirea.netelev.mireaproject.story.StoryFragment"
+        android:label="@string/menu_story"
+        tools:layout="@layout/fragment_story" />
+    <fragment
         android:id="@+id/nav_info"
         android:name="ru.mirea.netelev.mireaproject.InfoFragment"
-        android:label="fragment_info"
+        android:label="@string/menu_info"
         tools:layout="@layout/fragment_info" />
-
+    <fragment
+        android:id="@+id/nav_time"
+        android:name="ru.mirea.netelev.mireaproject.tmtimes.TmTimesFragment"
+        android:label="@string/time_hint"
+        tools:layout="@layout/fragment_tm_times" />
 </navigation>

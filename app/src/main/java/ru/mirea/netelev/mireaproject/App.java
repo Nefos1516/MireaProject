@@ -1,4 +1,4 @@
-package ru.mirea.netelev.mireaproject.story;
+package ru.mirea.netelev.mireaproject;
 
 import android.app.Application;
 
