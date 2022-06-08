@@ -72,4 +72,9 @@
         android:name="ru.mirea.netelev.mireaproject.tmtimes.TmTimesFragment"
         android:label="@string/time_hint"
         tools:layout="@layout/fragment_tm_times" />
+    <fragment
+        android:id="@+id/nav_map"
+        android:name="ru.mirea.netelev.mireaproject.MapsFragment"
+        android:label="@string/menu_map"
+        tools:layout="@layout/fragment_maps" />
 </navigation>
